@@ -20,9 +20,7 @@ ipq60xx_setup_interfaces()
 	glinet,gl-axt1800)
 		ucidef_set_interfaces_lan_wan "eth1 eth2" "eth0"
 		;;
-	jdcloud,ax1800-pro)
-		ucidef_set_interfaces_lan_wan "eth0 eth1 eth2" "eth3"
-		;;
+	jdcloud,re-ss-01|\
 	jdcloud,re-cs-07|\
 	cmiot,ax18|\
 	zn,m2|\

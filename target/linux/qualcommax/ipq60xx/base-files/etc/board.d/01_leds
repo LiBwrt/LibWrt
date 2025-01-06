@@ -18,7 +18,7 @@ case "$board" in
     ucidef_set_led_netdev "wlan5g" "WLAN5G" "blue:wlan5g" "wlan0"
         ;;
     redmi,ax5-jdcloud|\
-    jdcloud,ax1800-pro|\
+    jdcloud,re-ss-01|\
     jdcloud,ax6600)
         ucidef_set_led_netdev "wan" "WAN" "green:wan" "eth3" "link"
         ;;

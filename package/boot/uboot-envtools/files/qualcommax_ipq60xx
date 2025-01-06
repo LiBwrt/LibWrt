@@ -29,7 +29,7 @@ netgear,wax214)
 	;;
 jdcloud,re-cs-07|\
 redmi,ax5-jdcloud|\
-jdcloud,ax1800-pro|\
+jdcloud,re-ss-01|\
 jdcloud,ax6600)
         mmcpart="$(find_mmc_part 0:APPSBLENV)"
         [ -n "$mmcpart" ] && \
