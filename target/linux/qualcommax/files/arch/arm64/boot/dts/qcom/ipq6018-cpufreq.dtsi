@@ -1,7 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// Overclock CPU frequency to 1.6GHz
 &cpu_opp_table {
-	opp-1608000000 {
-		opp-supported-hw = <0x3>;
-	};
+	/delete-node/ opp-1608000000;
+	/delete-node/ opp-1800000000;
 };
