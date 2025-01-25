@@ -12,11 +12,12 @@ KERNEL_PATCHVER:=6.12
 
 include $(INCLUDE_DIR)/target.mk
 DEFAULT_PACKAGES += \
-	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom uboot-envtools\
+	kmod-usb3 kmod-usb-dwc3 kmod-usb-dwc3-qcom \
 	kmod-leds-gpio kmod-gpio-button-hotplug \
+	autocore cpufreq wpad-openssl uboot-envtools \
+	e2fsprogs f2fsck mkf2fs losetup \
+	kmod-fs-ext4 kmod-fs-f2fs \
 	kmod-qca-nss-dp kmod-ath11k-ahb \
-	wpad-openssl uboot-envtools \
-	e2fsprogs kmod-fs-ext4 losetup autocore cpufreq \
 	kmod-qca-nss-drv kmod-qca-nss-ecm \
 	kmod-qca-nss-drv-bridge-mgr
 
