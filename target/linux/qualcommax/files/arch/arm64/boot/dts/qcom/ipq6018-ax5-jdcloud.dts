@@ -9,7 +9,7 @@
 	compatible = "redmi,ax5-jdcloud", "qcom,ipq6018";
 
 	chosen {
-		bootargs-append = " rootfstype=squashfs,ext4 swiotlb=1 coherent_pool=2M";
+		/delete-property/ bootargs-append;
 	};
 };
 
