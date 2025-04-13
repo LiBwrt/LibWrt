@@ -1,0 +1,75 @@
+name: Sync all branches and tags from upstream
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # Tự động mỗi ngày lúc 01:00 UTC
+  workflow_dispatch:      # Cho phép chạy thủ công
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set Git identity
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+      - name: Add upstream and fetch
+        run: |
+          git remote add upstream https://github.com/LiBwrt/openwrt-6.x.git
+          git fetch upstream --tags
+          git fetch upstream
+
+      - name: Sync all branches from upstream (nếu có thay đổi)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXCLUDE_BRANCHES=("ipq50xx" "kernel-6.6" "kernel-6.8")
+          for branch in $(git ls-remote --heads upstream | awk '{print $2}' | sed 's|refs/heads/||'); do
+            if [[ " ${EXCLUDE_BRANCHES[*]} " == *" $branch "* ]]; then
+              echo "⚠️ Bỏ qua branch: $branch"
+              continue
+            fi
+
+            echo "📦 Kiểm tra branch: $branch"
+            upstream_commit=$(git rev-parse "upstream/$branch")
+            if git show-ref --verify --quiet "refs/heads/$branch"; then
+              local_commit=$(git rev-parse "origin/$branch")
+              if [ "$upstream_commit" == "$local_commit" ]; then
+                echo "✅ Branch $branch đã đồng bộ, bỏ qua"
+                continue
+              fi
+            fi
+
+            echo "🔄 Đồng bộ branch: $branch"
+            git checkout -B "$branch" "upstream/$branch"
+
+            # Khôi phục workflows nếu có từ origin/main (hoặc origin/$branch nếu bạn đặt workflow theo nhánh)
+            git checkout origin/main -- .github/workflows || true
+            git add .github/workflows || true
+            git commit -m "Khôi phục workflow sau khi sync $branch" || true
+
+            git push "https://x-access-token:${GH_TOKEN}@github.com/Doanduy09/jdc-ax1800-ax6600.git" "$branch"
+          done
+
+      - name: Sync all tags from upstream
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔖 Đồng bộ tất cả tags từ upstream"
+          git fetch upstream --tags
+          for tag in $(git tag); do
+            # Nếu tag chưa có trong origin thì push
+            if ! git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
+              echo "🆕 Push tag mới: $tag"
+              git push "https://x-access-token:${GH_TOKEN}@github.com/Doanduy09/jdc-ax1800-ax6600.git" "$tag"
+            else
+              echo "✅ Tag đã tồn tại: $tag"
+            fi
+          done
