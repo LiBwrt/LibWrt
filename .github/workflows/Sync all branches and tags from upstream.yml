@@ -38,24 +38,26 @@ jobs:
             fi
 
             echo "📦 Kiểm tra branch: $branch"
+            git fetch upstream "$branch"
             upstream_commit=$(git rev-parse "upstream/$branch")
-            if git show-ref --verify --quiet "refs/heads/$branch"; then
-              local_commit=$(git rev-parse "origin/$branch")
-              if [ "$upstream_commit" == "$local_commit" ]; then
-                echo "✅ Branch $branch đã đồng bộ, bỏ qua"
-                continue
-              fi
+
+            git fetch origin "$branch" || true
+            remote_commit=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+
+            if [ "$upstream_commit" == "$remote_commit" ]; then
+              echo "✅ Branch $branch đã đồng bộ, bỏ qua"
+              continue
             fi
 
             echo "🔄 Đồng bộ branch: $branch"
             git checkout -B "$branch" "upstream/$branch"
 
-            # Khôi phục workflows nếu có từ origin/main (hoặc origin/$branch nếu bạn đặt workflow theo nhánh)
+            # Khôi phục workflows nếu có
             git checkout origin/main -- .github/workflows || true
             git add .github/workflows || true
             git commit -m "Khôi phục workflow sau khi sync $branch" || true
 
-            git push "https://x-access-token:${GH_TOKEN}@github.com/Doanduy09/jdc-ax1800-ax6600.git" "$branch"
+            git push "https://x-access-token:${GH_TOKEN}@github.com/Doanduy09/jdc-ax1800-ax6600.git" "$branch" --force-with-lease
           done
 
       - name: Sync all tags from upstream
