@@ -4,24 +4,24 @@
 . /lib/functions.sh
 . /etc/openwrt_release
 
-# –?nh nghia bi?n
+# √ê?nh nghia bi?n
 WIFI_KEY="TPTlam011205@!"
 SSID_2G="TPT Lam"
 SSID_5G="TPT Lam 5G"
 SSID_6G="KU BO"
 HOSTNAME="DOANDUY"
 
-# C?u hÏnh Dropbear (SSH)
+# C?u h√¨nh Dropbear (SSH)
 uci set dropbear.@dropbear[0].PasswordAuth='on'
 uci set dropbear.@dropbear[0].RootPasswordAuth='on'
 chmod -R u=rwX,go= /etc/dropbear
 uci commit dropbear
 /etc/init.d/dropbear restart
 
-# T?t ki?m tra ch? k˝ gÛi
+# T?t ki?m tra ch? k√Ω g√≥i
 sed -i -re 's/^(option check_signature.*)/#\1/g' /etc/opkg.conf
 
-# C?u hÏnh m?ng LAN
+# C?u h√¨nh m?ng LAN
 uci set network.lan.ipaddr="192.168.1.1"
 uci commit network
 /etc/init.d/network restart
@@ -41,7 +41,7 @@ uci set network.lan.delegate="0"
 uci commit network
 /etc/init.d/network restart
 
-# Ki?m tra xem cÛ 6GHz khÙng
+# Ki?m tra xem c√≥ 6GHz kh√¥ng
 radio_count=$(uci show wireless | grep -c "wireless.radio[0-9]*\.type")
 has_6ghz=0
 for i in $(seq 0 $((radio_count - 1))); do
@@ -53,18 +53,18 @@ for i in $(seq 0 $((radio_count - 1))); do
     fi
 done
 
-# C?u hÏnh WiFi
+# C?u h√¨nh WiFi
 for i in $(seq 0 $((radio_count - 1))); do
     radio="radio$i"
     band=$(uci get wireless.$radio.band 2>/dev/null)
 
-    # –?t country code
+    # √ê?t country code
     uci set wireless.$radio.country='DE'
 
-    # –?t channel th‡nh auto
+    # √ê?t channel th√†nh auto
     uci set wireless.$radio.channel='auto'
 
-    # T?o wifi-iface n?u chua cÛ
+    # T?o wifi-iface n?u chua c√≥
     if ! uci show wireless | grep -q "wireless.@wifi-iface\[$i\]"; then
         uci add wireless wifi-iface >/dev/null
         uci set wireless.@wifi-iface[$i].device="$radio"
@@ -72,7 +72,7 @@ for i in $(seq 0 $((radio_count - 1))); do
         uci set wireless.@wifi-iface[$i].network='lan'
     fi
 
-    # Ph‚n lo?i theo band
+    # Ph√¢n lo?i theo band
     case "$band" in
         2g) # 2.4GHz
             uci set wireless.@wifi-iface[$i].ssid="$SSID_2G"
@@ -98,12 +98,12 @@ for i in $(seq 0 $((radio_count - 1))); do
     uci set wireless.@wifi-iface[$i].key="$WIFI_KEY"
 done
 
-# Commit v‡ ·p d?ng thay d?i WiFi
+# Commit v√† √°p d?ng thay d?i WiFi
 uci commit wireless
 /etc/init.d/network restart
 ubus call uci reload_config
 
-# C?u hÏnh NTP v‡ h? th?ng
+# C?u h√¨nh NTP v√† h? th?ng
 uci delete system.ntp.server
 uci add_list system.ntp.server='0.vn.pool.ntp.org'
 uci add_list system.ntp.server='2.asia.pool.ntp.org'
