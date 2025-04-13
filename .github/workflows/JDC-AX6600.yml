@@ -38,7 +38,6 @@ env:
   UPLOAD_RELEASE: true
   TZ: Asia/Ho_Chi_Minh
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  custom_99: 99-network-custom.sh
 
 jobs:
   build:
@@ -60,18 +59,21 @@ jobs:
           sudo timedatectl set-timezone "$TZ"
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
+
       - name: Clone source code
         working-directory: /workdir
         run: |
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
       - name: Load custom feeds
         run: |
           [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
           chmod +x $DIY_P1_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P1_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
+
       - name: Update feeds
         run: cd openwrt && ./scripts/feeds update -a
 
@@ -84,9 +86,9 @@ jobs:
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
           chmod +x $DIY_P2_SH && sed -i -e 's/\r$//' $GITHUB_WORKSPACE/$DIY_P2_SH
           mkdir -p openwrt/files/etc/uci-defaults
-          mv $custom_99 openwrt/files/etc/uci-defaults/99-custom
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
+
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
@@ -99,6 +101,7 @@ jobs:
           make download -j $(($(nproc)+1))
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
+
       - name: Compile the firmware
         id: compile
         run: |
@@ -109,12 +112,14 @@ jobs:
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
       - name: If Error
         if: steps.compile.outcome == 'failure'
         run: |
           cat openwrt/.config
           echo '================================================================'
           cd openwrt && make -j $(($(nproc)+1)) V=s
+
       - name: Check space usage
         if: (!cancelled())
         run: df -hT
@@ -140,6 +145,7 @@ jobs:
             echo "No firmware directory found!"
             exit 1
           fi
+
       - name: Upload firmware directory
         uses: actions/upload-artifact@main
         if: steps.organize.outputs.status == 'success' && !cancelled()
@@ -154,6 +160,7 @@ jobs:
           touch release.txt
           echo "release_tag=$(date +\"%Y.%m.%d\")"  >> $GITHUB_OUTPUT
           echo "status=success"  >> $GITHUB_OUTPUT
+
       - name: Upload firmware to release
         uses: softprops/action-gh-release@v2.0.8
         if: steps.tag.outputs.status == 'success' && !cancelled()
