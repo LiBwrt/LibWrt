@@ -38,7 +38,7 @@ env:
   UPLOAD_RELEASE: true
   TZ: Asia/Ho_Chi_Minh
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  custom_99: 99-setup-wifi.sh
+  
 
 jobs:
   build:
