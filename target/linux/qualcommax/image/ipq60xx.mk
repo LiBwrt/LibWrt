@@ -333,7 +333,7 @@ define Device/redmi_ax5-jdcloud
 	SOC := ipq6000
 	DEVICE_DTS_CONFIG := config@cp03-c1
 	DEVICE_PACKAGES := ipq-wifi-redmi_ax5-jdcloud
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | pad-rootfs | pad-to 64k
 endef
 TARGET_DEVICES += redmi_ax5-jdcloud
 
@@ -346,7 +346,7 @@ define Device/link_nn6000-v1
 	SOC := ipq6000
 	DEVICE_DTS_CONFIG := config@cp03-c1
 	DEVICE_PACKAGES := ipq-wifi-link_nn6000
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | pad-rootfs | pad-to 64k
 endef
 TARGET_DEVICES += link_nn6000-v1
 
@@ -365,7 +365,7 @@ define Device/jdcloud_re-ss-01
 	SOC := ipq6000
 	DEVICE_DTS_CONFIG := config@cp03-c2
 	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-ss-01
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | pad-rootfs | pad-to 64k
 endef
 TARGET_DEVICES += jdcloud_re-ss-01
 
@@ -378,7 +378,7 @@ define Device/jdcloud_re-cs-02
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp03-c3
 	DEVICE_PACKAGES := ipq-wifi-jdcloud_re-cs-02 ath11k-firmware-qcn9074
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | pad-rootfs | pad-to 64k
 endef
 TARGET_DEVICES += jdcloud_re-cs-02
 
@@ -391,6 +391,6 @@ define Device/jdcloud_re-cs-07
 	SOC := ipq6010
 	DEVICE_DTS_CONFIG := config@cp03-c4
 	DEVICE_PACKAGES := -ath11k-firmware-ipq6018 -ath11k-firmware-qcn9074 -kmod-ath11k -kmod-ath11k-ahb -kmod-ath11k-pci -hostapd-common -wpad-openssl
-	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | append-metadata
+	IMAGE/factory.bin := append-kernel | pad-to $$(KERNEL_SIZE) | append-rootfs | pad-rootfs | pad-to 64k
 endef
 TARGET_DEVICES += jdcloud_re-cs-07
