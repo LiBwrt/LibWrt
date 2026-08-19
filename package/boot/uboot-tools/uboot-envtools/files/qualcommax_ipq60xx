@@ -25,8 +25,6 @@ cmiot,ax18|\
 kt,ar06-012h|\
 lg,gapd-7500|\
 qihoo,360v6|\
-redmi,ax5|\
-xiaomi,ax1800|\
 netgear,wax214|\
 netgear,wax610|\
 netgear,wax610y|\
@@ -34,6 +32,14 @@ tplink,eap610-outdoor|\
 tplink,eap623od-hd-v1|\
 tplink,eap625-outdoor-hd-v1)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x40000" "0x20000"
+	;;
+# Xiaomi IPQ60xx devices store a 64 KiB environment: the CRC32 stored in the
+# first 4 bytes covers 0x04..0x10000.  A larger env size makes fw_printenv
+# report "Bad CRC, using default environment" and fw_setenv rewrite the
+# environment from defaults, wiping vendor variables.
+redmi,ax5|\
+xiaomi,ax1800)
+	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x20000"
 	;;
 yuncore,fap650)
 	ubootenv_add_mtd "0:appsblenv" "0x0" "0x10000" "0x10000"
