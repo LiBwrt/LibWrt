@@ -1,0 +1,31 @@
+From: Canary233 <2096276316@qq.com>
+Subject: netfilter: nf_conntrack: tolerate notifiers without exp_event
+
+The QCA NSS ECM driver registers a struct nf_ct_event_notifier that only
+implements .ct_event.  nf_ct_expect_event_report() calls ->exp_event()
+unconditionally, so any conntrack expectation event (e.g. created by the
+FTP helper for a forwarded connection) jumps to NULL and crashes the
+kernel:
+
+  pc : 0x0
+  lr : nf_ct_expect_event_report+0x7c/0x9c [nf_conntrack]
+  Call trace:
+   nf_ct_expect_related_report
+   nf_confirm
+   ip_forward
+   wg_packet_rx_poll
+
+Skip the callback when the registered notifier does not provide it.
+
+--- a/net/netfilter/nf_conntrack_ecache.c
++++ b/net/netfilter/nf_conntrack_ecache.c
+@@ -263,7 +263,8 @@ void nf_ct_expect_event_report(enum ip_c
+ 			.portid	= portid,
+ 			.report = report
+ 		};
+-		notify->exp_event(1 << event, &item);
++		if (notify->exp_event)
++			notify->exp_event(1 << event, &item);
+ 	}
+ out_unlock:
+ 	rcu_read_unlock();
