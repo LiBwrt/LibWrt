@@ -83,7 +83,9 @@ function setup_phy(phy, config, data) {
 	if (config.rxantenna == 'all')
 		config.rxantenna = 0xffffffff;
 
-	if (config.txantenna != data?.txantenna || config.rxantenna != data?.rxantenna)
+	let antenna_changed = (config.txantenna != data?.txantenna || config.rxantenna != data?.rxantenna);
+
+	if (antenna_changed)
 		reset_config(phy, config.radio);
 
 	netifd.set_data({
@@ -98,8 +100,11 @@ function setup_phy(phy, config, data) {
 	else
 		config.txpower = 'auto';
 
-	log(`Configuring '${phy}' txantenna: ${config.txantenna}, rxantenna: ${config.rxantenna} distance: ${config.distance}`);
-	system(`iw phy ${phy} set antenna ${config.txantenna} ${config.rxantenna}`);
+	log(`Configuring '${phy}' distance: ${config.distance}`);
+	if (antenna_changed) {
+		log(`Setting antenna for '${phy}' txantenna: ${config.txantenna}, rxantenna: ${config.rxantenna}`);
+		system(`iw phy ${phy} set antenna ${config.txantenna} ${config.rxantenna}`);
+	}
 	system(`iw phy ${phy} set distance ${config.distance}`);
 	system(`iw phy ${phy} set txpower ${config.txpower}`);
 
@@ -120,6 +125,20 @@ function iw_htmode(config) {
 	case "HE20":
 	case "EHT20":
 		return "HT20";
+	case "HT40":
+	case "VHT40":
+	case "HE40":
+	case "EHT40":
+		switch (config.band) {
+		case "2g":
+			return (+config.channel < 7) ? "HT40+" : "HT40-";
+		case "6g":
+			let ch = +config.channel;
+			let c_base = int((ch - 1) / 8) * 8 + 1;
+			return "40 " + (5950 + (c_base + 2) * 5);
+		default:
+			return ((+config.channel / 4) % 2) ? "HT40+" : "HT40-";
+		}
 	case "VHT80":
 	case "HE80":
 	case "EHT80":
@@ -130,18 +149,6 @@ function iw_htmode(config) {
 	case "NONE":
 	case "NOHT":
 		return "NOHT";
-	}
-
-	if (substr(config.htmode, 2) == "40") {
-		switch (config.band) {
-		case "2g":
-			if (+config.channel < 7)
-				return "HT40+";
-			else
-				return "HT40-";
-		default:
-			return ((+config.channel / 4) % 2) ? "HT40+" : "HT40-";
-		}
 	}
 
 	return null;
@@ -212,7 +219,7 @@ function setup() {
 		idx[mode] ??= 0;
 		let mode_idx = idx[mode]++;
 
-		if (!v.config.ifname) 
+		if (!v.config.ifname)
 			v.config.ifname = data.ifname_prefix + mode + mode_idx;
 		push(active_ifnames, v.config.ifname);
 
@@ -245,7 +252,7 @@ function setup() {
 				break;
 			// fallthrough
 		case 'mesh':
-			supplicant_mesh ??= !system("wpa_supplicant -vmesh");
+			supplicant_mesh ??= (fs.access('/usr/sbin/wpa_supplicant', 'x') && !system("/usr/sbin/wpa_supplicant -vmesh"));
 			if (mode == "mesh" && !supplicant_mesh)
 				break;
 			// fallthrough
