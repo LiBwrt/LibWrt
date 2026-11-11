@@ -470,7 +470,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  };
 --- a/net/xfrm/xfrm_device.c
 +++ b/net/xfrm/xfrm_device.c
-@@ -418,8 +418,9 @@ bool xfrm_dev_offload_ok(struct sk_buff
+@@ -426,8 +426,9 @@ bool xfrm_dev_offload_ok(struct sk_buff
  
  	if (x->xso.type == XFRM_DEV_OFFLOAD_PACKET ||
  	    ((!dev || (dev == xfrm_dst_path(dst)->dev)) &&

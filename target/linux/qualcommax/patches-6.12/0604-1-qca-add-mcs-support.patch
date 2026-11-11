@@ -831,7 +831,7 @@
  /* Delete a VIF entry */
  static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
  		       struct list_head *head)
-@@ -1235,6 +1468,7 @@ static int ip6mr_mfc_delete(struct mr_ta
+@@ -1236,6 +1469,7 @@ static int ip6mr_mfc_delete(struct mr_ta
  			    int parent)
  {
  	struct mfc6_cache *c;
@@ -839,7 +839,7 @@
  
  	/* The entries are added/deleted only under RTNL */
  	rcu_read_lock();
-@@ -1243,6 +1477,11 @@ static int ip6mr_mfc_delete(struct mr_ta
+@@ -1244,6 +1478,11 @@ static int ip6mr_mfc_delete(struct mr_ta
  	rcu_read_unlock();
  	if (!c)
  		return -ENOENT;
@@ -851,7 +851,7 @@
  	rhltable_remove(&mrt->mfc_hash, &c->_c.mnode, ip6mr_rht_params);
  	list_del_rcu(&c->_c.list);
  
-@@ -1250,6 +1489,11 @@ static int ip6mr_mfc_delete(struct mr_ta
+@@ -1251,6 +1490,11 @@ static int ip6mr_mfc_delete(struct mr_ta
  				       FIB_EVENT_ENTRY_DEL, c, mrt->id);
  	mr6_netlink_event(mrt, c, RTM_DELROUTE);
  	mr_cache_put(&c->_c);
@@ -863,7 +863,7 @@
  	return 0;
  }
  
-@@ -1468,6 +1712,10 @@ static int ip6mr_mfc_add(struct net *net
+@@ -1469,6 +1713,10 @@ static int ip6mr_mfc_add(struct net *net
  		call_ip6mr_mfc_entry_notifiers(net, FIB_EVENT_ENTRY_REPLACE,
  					       c, mrt->id);
  		mr6_netlink_event(mrt, c, RTM_NEWROUTE);

@@ -118,7 +118,7 @@
  #define QUEUE_STATE_DRV_XOFF	(1 << __QUEUE_STATE_DRV_XOFF)
  #define QUEUE_STATE_STACK_XOFF	(1 << __QUEUE_STATE_STACK_XOFF)
  #define QUEUE_STATE_FROZEN	(1 << __QUEUE_STATE_FROZEN)
-@@ -2032,6 +2062,7 @@ struct net_device {
+@@ -2034,6 +2064,7 @@ struct net_device {
  		unsigned long		priv_flags:32;
  		unsigned long		lltx:1;
  	);
@@ -126,7 +126,7 @@
  	const struct net_device_ops *netdev_ops;
  	const struct header_ops *header_ops;
  	struct netdev_queue	*_tx;
-@@ -2964,6 +2995,10 @@ enum netdev_cmd {
+@@ -2968,6 +2999,10 @@ enum netdev_cmd {
  	NETDEV_OFFLOAD_XSTATS_REPORT_USED,
  	NETDEV_OFFLOAD_XSTATS_REPORT_DELTA,
  	NETDEV_XDP_FEAT_CHANGE,
@@ -635,7 +635,7 @@
  }
 --- a/net/ipv4/fib_trie.c
 +++ b/net/ipv4/fib_trie.c
-@@ -1196,6 +1196,9 @@ static int fib_insert_alias(struct trie
+@@ -1194,6 +1194,9 @@ static int fib_insert_alias(struct trie
  static void fib_remove_alias(struct trie *t, struct key_vector *tp,
  			     struct key_vector *l, struct fib_alias *old);
  
@@ -645,7 +645,7 @@
  /* Caller must hold RTNL. */
  int fib_table_insert(struct net *net, struct fib_table *tb,
  		     struct fib_config *cfg, struct netlink_ext_ack *extack)
-@@ -1386,6 +1389,9 @@ int fib_table_insert(struct net *net, st
+@@ -1384,6 +1387,9 @@ int fib_table_insert(struct net *net, st
  	rtmsg_fib(RTM_NEWROUTE, htonl(key), new_fa, plen, new_fa->tb_id,
  		  &cfg->fc_nlinfo, nlflags);
  succeeded:
@@ -655,7 +655,7 @@
  	return 0;
  
  out_remove_new_fa:
-@@ -1754,6 +1760,9 @@ int fib_table_delete(struct net *net, st
+@@ -1752,6 +1758,9 @@ int fib_table_delete(struct net *net, st
  	if (READ_ONCE(fa_to_delete->fa_state) & FA_S_ACCESSED)
  		rt_cache_flush(cfg->fc_nlinfo.nl_net);
  
@@ -665,7 +665,7 @@
  	fib_release_info(fa_to_delete->fa_info);
  	alias_free_mem_rcu(fa_to_delete);
  	return 0;
-@@ -2391,6 +2400,20 @@ void __init fib_trie_init(void)
+@@ -2389,6 +2398,20 @@ void __init fib_trie_init(void)
  					   0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
  }
  
@@ -729,7 +729,7 @@
  out:
  	fib6_info_release(rt);
  	return err;
-@@ -6438,6 +6448,20 @@ static int ip6_route_dev_notify(struct n
+@@ -6436,6 +6446,20 @@ static int ip6_route_dev_notify(struct n
  	return NOTIFY_OK;
  }
  
@@ -760,7 +760,7 @@
  	}
  #undef N
  	return "UNKNOWN_NETDEV_EVENT";
-@@ -12220,7 +12221,7 @@ static void __init net_dev_struct_check(
+@@ -12333,7 +12334,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_tx, tcx_egress);
  #endif
@@ -957,7 +957,7 @@
  
 --- a/net/ipv6/ip6_gre.c
 +++ b/net/ipv6/ip6_gre.c
-@@ -1944,6 +1944,7 @@ static void ip6gre_tap_setup(struct net_
+@@ -1937,6 +1937,7 @@ static void ip6gre_tap_setup(struct net_
  	dev->pcpu_stat_type = NETDEV_PCPU_STAT_TSTATS;
  	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
  	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;

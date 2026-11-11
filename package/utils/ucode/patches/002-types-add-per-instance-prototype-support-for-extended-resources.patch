@@ -39,7 +39,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  	uint32_t persistent:1;
  	uint32_t uvcount:8;
  	uint32_t datasize:20;
-@@ -449,6 +450,7 @@ uc_resource_type_t *ucv_resource_type_lookup(uc_vm_t *, const char *);
+@@ -449,6 +450,7 @@ uc_resource_type_t *ucv_resource_type_lo
  
  uc_value_t *ucv_resource_new(uc_resource_type_t *, void *);
  uc_value_t *ucv_resource_new_ex(uc_vm_t *, uc_resource_type_t *, void **, size_t, size_t);
@@ -47,7 +47,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  void *ucv_resource_data(uc_value_t *uv, const char *);
  void **ucv_resource_dataptr(uc_value_t *, const char *);
  uc_value_t *ucv_resource_value_get(uc_value_t *, size_t);
-@@ -491,6 +493,17 @@ ucv_resource_create_ex(uc_vm_t *vm, const char *type, void **data, size_t uvcoun
+@@ -491,6 +493,17 @@ ucv_resource_create_ex(uc_vm_t *vm, cons
      return ucv_resource_new_ex(vm, t, data, uvcount, datasize);
  }
  
@@ -65,7 +65,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  static inline bool
  ucv_resource_is_extended(uc_value_t *uv)
  {
-@@ -519,6 +532,28 @@ ucv_resource_persistent_set(uc_value_t *uv, bool persistent)
+@@ -519,6 +532,28 @@ ucv_resource_persistent_set(uc_value_t *
  	return true;
  }
  
@@ -96,7 +96,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  uc_value_t *ucv_upvalref_new(size_t);
 --- a/types.c
 +++ b/types.c
-@@ -102,7 +102,7 @@ ucv_resource_values(uc_resource_ext_t *res)
+@@ -102,7 +102,7 @@ ucv_resource_values(uc_resource_ext_t *r
  {
  	void *data;
  
@@ -142,7 +142,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  
  			ref = &res->ref;
  		}
-@@ -1298,8 +1298,45 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_resource_type_t *type, void **data, size_t u
+@@ -1298,8 +1298,45 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_reso
  	assert(datasize < (8 << 20));
  
  	size = sizeof(*res);
@@ -188,7 +188,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  
  	res = xalloc(size);
  	res->header.type = UC_RESOURCE;
-@@ -1308,6 +1345,8 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_resource_type_t *type, void **data, size_t u
+@@ -1308,6 +1345,8 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_reso
  	res->type = type;
  	res->uvcount = uvcount;
  	res->datasize = datasize / 8;
@@ -197,7 +197,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  	if (data)
  		*data = res + 1;
  
-@@ -1316,6 +1355,13 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_resource_type_t *type, void **data, size_t u
+@@ -1316,6 +1355,13 @@ ucv_resource_new_ex(uc_vm_t *vm, uc_reso
  		vm->alloc_refs++;
  	}
  
@@ -211,7 +211,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  	return &res->header;
  }
  
-@@ -1343,8 +1389,9 @@ ucv_resource_data(uc_value_t *uv, const char *name)
+@@ -1343,8 +1389,9 @@ ucv_resource_data(uc_value_t *uv, const
  
  	if (uv->ext_flag) {
  		uc_resource_ext_t *res = (uc_resource_ext_t *)uv;
@@ -222,15 +222,14 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  	}
  	else {
  		uc_resource_t *res = (uc_resource_t *)uv;
-@@ -1370,10 +1417,20 @@ ucv_resource_value_get(uc_value_t *uv, size_t idx)
+@@ -1370,10 +1417,20 @@ ucv_resource_value_get(uc_value_t *uv, s
  	uc_resource_ext_t *res = (uc_resource_ext_t *)uv;
  	uc_value_t **uvdata = ucv_resource_values(res);
  
 -	if (!uvdata || idx >= res->uvcount)
 +	if (!uvdata)
- 		return NULL;
- 
--	return uvdata[idx];
++		return NULL;
++
 +	if (idx == UCV_RESOURCE_PROTO_IDX) {
 +		if (!res->hasproto)
 +			return NULL;
@@ -239,13 +238,14 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
 +	}
 +
 +	if (idx >= res->uvcount)
-+		return NULL;
-+
+ 		return NULL;
+ 
+-	return uvdata[idx];
 +	return uvdata[idx + res->hasproto];
  }
  
  bool
-@@ -1382,11 +1439,24 @@ ucv_resource_value_set(uc_value_t *uv, size_t idx, uc_value_t *val)
+@@ -1382,11 +1439,24 @@ ucv_resource_value_set(uc_value_t *uv, s
  	uc_resource_ext_t *res = (uc_resource_ext_t *)uv;
  	uc_value_t **uvdata = ucv_resource_values(res);
  
@@ -260,15 +260,15 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
 +
 +		ucv_put(uvdata[0]);
 +		uvdata[0] = val;
-+
+ 
+-	ucv_put(uvdata[idx]);
+-	uvdata[idx] = val;
 +		return true;
 +	}
 +
 +	if (idx >= res->uvcount)
 +		return false;
- 
--	ucv_put(uvdata[idx]);
--	uvdata[idx] = val;
++
 +	ucv_put(uvdata[idx + res->hasproto]);
 +	uvdata[idx + res->hasproto] = val;
  
@@ -284,7 +284,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  		restype = ucv_resource_type(uv);
  
  		return restype ? restype->proto : NULL;
-@@ -1497,6 +1570,26 @@ ucv_prototype_set(uc_value_t *uv, uc_value_t *proto)
+@@ -1497,6 +1570,26 @@ ucv_prototype_set(uc_value_t *uv, uc_val
  
  		return true;
  

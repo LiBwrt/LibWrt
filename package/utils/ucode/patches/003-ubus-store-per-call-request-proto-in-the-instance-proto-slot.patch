@@ -31,7 +31,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
 
 --- a/lib/ubus.c
 +++ b/lib/ubus.c
-@@ -2444,8 +2444,23 @@ uc_ubus_handle_reply_common(struct ubus_context *ctx,
+@@ -2444,8 +2444,23 @@ uc_ubus_handle_reply_common(struct ubus_
  	uc_value_t *reqobj, *res;
  	int rv;
  
@@ -57,7 +57,7 @@ Signed-off-by: Jo-Philipp Wich <jo@mein.io>
  
  	if (!callctx)
  		return UBUS_STATUS_UNKNOWN_ERROR;
-@@ -2459,9 +2474,6 @@ uc_ubus_handle_reply_common(struct ubus_context *ctx,
+@@ -2459,9 +2474,6 @@ uc_ubus_handle_reply_common(struct ubus_
  	/* fd is copied to deferred request. ensure it does not get closed early */
  	ubus_request_get_caller_fd(req);
  

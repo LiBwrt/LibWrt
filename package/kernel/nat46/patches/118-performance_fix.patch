@@ -415,7 +415,7 @@ Date: Fri Dec 17 13:37:15 2021 -0800
  		ret = nat46_ipv6_input(skb);
  	}
  	if(0 == ret) {
-@@ -188,6 +187,7 @@ static void nat46_netdev_setup(struct ne
+@@ -189,6 +188,7 @@ static void nat46_netdev_setup(struct ne
  	dev->netns_immutable = true;
  #endif
  	dev->flags = IFF_NOARP | IFF_POINTOPOINT;
