@@ -146,7 +146,7 @@
 +obj-$(CONFIG_SKB_RECYCLER) += skbuff_recycle.o
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6246,12 +6246,18 @@ static int process_backlog(struct napi_s
+@@ -6298,12 +6298,18 @@ static int process_backlog(struct napi_s
  
  	napi->weight = READ_ONCE(net_hotdata.dev_rx_weight);
  	while (again) {
@@ -636,7 +636,7 @@
  	return 0;
  
  nofrags:
-@@ -5147,6 +5366,17 @@ static void skb_extensions_init(void) {}
+@@ -5151,6 +5370,17 @@ static void skb_extensions_init(void) {}
  
  void __init skb_init(void)
  {
@@ -654,7 +654,7 @@
  	net_hotdata.skbuff_cache = kmem_cache_create_usercopy("skbuff_head_cache",
  					      sizeof(struct sk_buff),
  					      0,
-@@ -5172,6 +5402,7 @@ void __init skb_init(void)
+@@ -5176,6 +5406,7 @@ void __init skb_init(void)
  						SKB_SMALL_HEAD_HEADROOM,
  						NULL);
  	skb_extensions_init();
@@ -662,7 +662,7 @@
  }
  
  static int
-@@ -6756,6 +6987,7 @@ static int pskb_carve_inside_header(stru
+@@ -6760,6 +6991,7 @@ static int pskb_carve_inside_header(stru
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -670,7 +670,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6786,7 +7018,7 @@ static int pskb_carve_inside_header(stru
+@@ -6790,7 +7022,7 @@ static int pskb_carve_inside_header(stru
  			skb_frag_ref(skb, i);
  		if (skb_has_frag_list(skb))
  			skb_clone_fraglist(skb);
@@ -679,7 +679,7 @@
  	} else {
  		/* we can reuse existing recount- all we did was
  		 * relocate values
-@@ -6879,6 +7111,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6883,6 +7115,7 @@ static int pskb_carve_inside_nonlinear(s
  	if (skb_pfmemalloc(skb))
  		gfp_mask |= __GFP_MEMALLOC;
  
@@ -687,7 +687,7 @@
  	data = kmalloc_reserve(&size, gfp_mask, NUMA_NO_NODE, NULL);
  	if (!data)
  		return -ENOMEM;
-@@ -6933,7 +7166,7 @@ static int pskb_carve_inside_nonlinear(s
+@@ -6937,7 +7170,7 @@ static int pskb_carve_inside_nonlinear(s
  	}
  	if (skb_zcopy(skb))
  		net_zcopy_get(skb_zcopy(skb));

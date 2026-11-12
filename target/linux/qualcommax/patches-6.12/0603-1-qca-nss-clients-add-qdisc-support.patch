@@ -42,7 +42,7 @@
  	dev->needs_free_netdev = true;
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -4760,6 +4760,15 @@ void dev_uc_flush(struct net_device *dev
+@@ -4765,6 +4765,15 @@ void dev_uc_flush(struct net_device *dev
  void dev_uc_init(struct net_device *dev);
  
  /**
@@ -58,7 +58,7 @@
   *  __dev_uc_sync - Synchronize device's unicast list
   *  @dev:  device to sync
   *  @sync: function to call if address should be added
-@@ -5318,6 +5327,11 @@ static inline bool netif_is_failover_sla
+@@ -5323,6 +5332,11 @@ static inline bool netif_is_failover_sla
  	return dev->priv_flags & IFF_FAILOVER_SLAVE;
  }
  
@@ -360,7 +360,7 @@
  subsys_initcall(pktsched_init);
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -1093,6 +1093,7 @@ static void __qdisc_destroy(struct Qdisc
+@@ -1112,6 +1112,7 @@ static void __qdisc_destroy(struct Qdisc
  
  	qdisc_free_rcu(qdisc);
  }
@@ -378,7 +378,7 @@
  	u32			limit;
  	const struct Qdisc_ops	*ops;
  	struct qdisc_size_table	__rcu *stab;
-@@ -783,6 +784,42 @@ static inline bool skb_skip_tc_classify(
+@@ -792,6 +793,42 @@ static inline bool skb_skip_tc_classify(
  	return false;
  }
  
@@ -421,7 +421,7 @@
  /* Reset all TX qdiscs greater than index of a device.  */
  static inline void qdisc_reset_all_tx_gt(struct net_device *dev, unsigned int i)
  {
-@@ -1423,4 +1460,9 @@ static inline void qdisc_synchronize(con
+@@ -1450,4 +1487,9 @@ static inline void qdisc_synchronize(con
  		msleep(1);
  }
  
