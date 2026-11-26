@@ -760,7 +760,7 @@
  	}
  #undef N
  	return "UNKNOWN_NETDEV_EVENT";
-@@ -12333,7 +12334,7 @@ static void __init net_dev_struct_check(
+@@ -12341,7 +12342,7 @@ static void __init net_dev_struct_check(
  #ifdef CONFIG_NET_XGRESS
  	CACHELINE_ASSERT_GROUP_MEMBER(struct net_device, net_device_read_tx, tcx_egress);
  #endif
@@ -875,7 +875,7 @@
  	/*
  	 * Get the required data from the packet.
  	 */
-@@ -1331,7 +1335,7 @@ int nf_conntrack_tcp_packet(struct nf_co
+@@ -1333,7 +1337,7 @@ int nf_conntrack_tcp_packet(struct nf_co
  		 IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED &&
  		 timeouts[new_state] > timeouts[TCP_CONNTRACK_UNACK])
  		timeout = timeouts[TCP_CONNTRACK_UNACK];
@@ -884,7 +884,7 @@
  		 timeouts[new_state] > timeouts[TCP_CONNTRACK_RETRANS])
  		timeout = timeouts[TCP_CONNTRACK_RETRANS];
  	else
-@@ -1643,6 +1647,9 @@ void nf_conntrack_tcp_init_net(struct ne
+@@ -1645,6 +1649,9 @@ void nf_conntrack_tcp_init_net(struct ne
  	 */
  	tn->tcp_be_liberal = 0;
  
@@ -929,25 +929,25 @@
  #undef XASSIGN
 --- a/net/ipv4/ip_gre.c
 +++ b/net/ipv4/ip_gre.c
-@@ -689,6 +689,8 @@ static netdev_tx_t ipgre_xmit(struct sk_
- 					      tunnel->parms.o_flags)))
+@@ -688,6 +688,8 @@ static netdev_tx_t ipgre_xmit(struct sk_
+ 	if (gre_handle_offloads(skb, test_bit(IP_TUNNEL_CSUM_BIT, flags)))
  		goto free_skb;
  
 +	skb->skb_iif = dev->ifindex;
 +
- 	__gre_xmit(skb, dev, tnl_params, skb->protocol);
+ 	__gre_xmit(skb, dev, tnl_params, skb->protocol, flags);
  	return NETDEV_TX_OK;
  
-@@ -773,6 +775,8 @@ static netdev_tx_t gre_tap_xmit(struct s
+@@ -777,6 +779,8 @@ static netdev_tx_t gre_tap_xmit(struct s
  	if (skb_cow_head(skb, dev->needed_headroom))
  		goto free_skb;
  
 +	skb->skb_iif = dev->ifindex;
 +
- 	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB));
+ 	__gre_xmit(skb, dev, &tunnel->parms.iph, htons(ETH_P_TEB), flags);
  	return NETDEV_TX_OK;
  
-@@ -1382,6 +1386,7 @@ static void ipgre_tap_setup(struct net_d
+@@ -1387,6 +1391,7 @@ static void ipgre_tap_setup(struct net_d
  	dev->netdev_ops	= &gre_tap_netdev_ops;
  	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
  	dev->priv_flags	|= IFF_LIVE_ADDR_CHANGE;
@@ -967,7 +967,7 @@
  
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -995,6 +995,7 @@ static int tun_net_init(struct net_devic
+@@ -999,6 +999,7 @@ static int tun_net_init(struct net_devic
  			     ~(NETIF_F_HW_VLAN_CTAG_TX |
  			       NETIF_F_HW_VLAN_STAG_TX);
  	dev->lltx = true;
