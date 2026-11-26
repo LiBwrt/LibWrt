@@ -177,7 +177,7 @@ Signed-off-by: Pavithra R <quic_pavir@quicinc.com>
  int xfrm_init_state(struct xfrm_state *x);
 --- a/net/xfrm/xfrm_policy.c
 +++ b/net/xfrm/xfrm_policy.c
-@@ -4304,6 +4304,10 @@ static int __net_init xfrm_net_init(stru
+@@ -4311,6 +4311,10 @@ static int __net_init xfrm_net_init(stru
  	spin_lock_init(&net->xfrm.xfrm_policy_lock);
  	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
  	mutex_init(&net->xfrm.xfrm_cfg_mutex);
